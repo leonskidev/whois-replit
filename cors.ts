@@ -19,7 +19,7 @@ const ORIGIN = "https://whois.repl.co";
 
 serve({
   "/": async (req) => {
-    if(req.url.toLowerCase() !== ORIGIN) {
+    if(req.headers.get("Origin") !== ORIGIN) {
       return new Response(null, { status: 401 });
     }
 

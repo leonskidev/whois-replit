@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Replit User Whois</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&amp;display=swap">
+
+    <style>
+      body {
+        max-width: 640px;
+
+        margin: 3rem auto;
+        padding: 0 2rem;
+
+        color: #444444;
+
+        font-family: "Inter", sans-serif;
+        font-size: 18px;
+        line-height: 1.4;
+      }
+
+      h1, h2, h3 { line-height: 1.2; }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Replit User Whois</h1>
+
+      <p>
+        A quick and <b><a href="https://replit.com/talk/share/Presenting-Replit-User-Search-v3/145961" target="blank">painless</a></b>
+        way to find out information about a <b><a href="https://replit.com" target="blank">Replit</a></b> user.
+      </p>
+    </header>
+
+    <main>
+      <div>
+        <input id="search" style="display: inline-block;" type="text">
+        <p style="display: inline-block;"><small>(Enter to search)</small></p>
+
+        <div id="user"></div>
+      </div>
+
+      <p>
+        We <b>don't</b> support <b>user search</b> as it requires we handle a
+        weird, <b>unofficial</b>, login system. If you want this functionality, please
+        see <b><a href="https://replit.com/talk/share/Presenting-Replit-User-Search-v3/145961" target="blank">this repl-talk</a></b>.
+      </p>
+    </main>
+
+    <footer>
+      <p>
+        <small>Copyright © 2021 <b>Leon Davis</b></small>
+        &bullet;
+        <small>We <b>don't</b> store any data; <b>at all</b></small>
+      </p>
+    </footer>
+
+    <script>
+      /** @returns {HTMLInputElement} */
+      const search = () => document.getElementById("search");
+      /** @returns {HTMLDivElement} */
+      const user = () => document.getElementById("user");
+
+      // const CHECK_MARK = "✔"; // &check;
+
+      /**
+       * @param {string} username
+       * @returns Response
+       */
+      const find = async (username) => {
+        return await fetch(
+          API_URL,
+          {
+            method: "POST",
+            headers: HEADERS,
+            body: `query {
+              userByUsername(username: "${username}") {
+                id username
+              }
+            }`
+          }
+        );
+      };
+
+      search().addEventListener("keyup", async (ev) => {
+        if(ev.key === "Enter") {
+          console.log(await find(ev.currentTarget.value));
+        }
+      });
+    </script>
+  </body>
+</html>

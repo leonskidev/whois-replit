@@ -18,9 +18,9 @@ const ORIGIN = "https://whois.repl.co";
 
 serve({
   "/": async (req) => {
-    if(req.url.toLowerCase() !== ORIGIN) {
-      return new Response(null, { status: 401 });
-    }
+    // if(req.url.toLowerCase() !== ORIGIN) {
+    //   return new Response(null, { status: 401 });
+    // }
 
     const api = await fetch(
       API_URL,

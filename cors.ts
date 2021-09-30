@@ -36,7 +36,7 @@ serve({
     // api.headers.set("Access-Control-Allow-Origin", "*");
 
     return new Response(
-      api.body,
+      await api.text(),
       {
         headers: {
           "Access-Control-Allow-Origin": "*",

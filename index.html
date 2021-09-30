@@ -41,7 +41,7 @@
         <input id="search" style="display: inline-block;" type="text">
         <p style="display: inline-block;"><small>(Enter to search)</small></p>
 
-        <div id="user"></div>
+        <div id="user"><div></div></div>
       </div>
 
       <p>
@@ -67,28 +67,43 @@
 
       // const CHECK_MARK = "✔"; // &check;
 
-      /**
-       * @param {string} username
-       * @returns Response
-       */
+      /** @param {string} username */
       const find = async (username) => {
-        return await fetch(
+        let info = await fetch(
           "https://whois-replit.deno.dev",
           {
             method: "POST",
             headers: { "Origin": "https://whois.repl.co" },
             body: `query {
               userByUsername(username: "${username}") {
-                id username
+                id username firstName lastName bio isVerified url isLoggedIn
+                timeCreated image
               }
-            }`
+            }` // roles {} subscription {} languages {}
           }
         );
+
+        if(!info.ok) {
+          const err = document.createElement("p");
+          err.textContent = "Looks like there was a problem with the API.";
+          user().firstChild.replaceWith(err);
+          return;
+        }
+
+        info = await info.json();
+        console.log(info);
+
+        // if(info.name && info.name === "Error") {
+        //   const err = document.createElement("p");
+        //   err.textContent = "That user doesn't exist.";
+        //   user().firstChild.replaceWith(err);
+        //   return;
+        // }
       };
 
       search().addEventListener("keyup", async (ev) => {
         if(ev.key === "Enter") {
-          console.log(await find(ev.currentTarget.value));
+          await find(ev.currentTarget.value);
         }
       });
     </script>

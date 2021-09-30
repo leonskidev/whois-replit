@@ -27,7 +27,7 @@ serve({
       {
         method: "POST",
         headers: HEADERS,
-        body: await req.json(),
+        body: await req.text(),
       }
     );
 

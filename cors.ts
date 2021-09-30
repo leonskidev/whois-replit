@@ -23,27 +23,21 @@ serve({
     //   return new Response(null, { status: 401 });
     // }
 
-    let json = await req.text();
-    console.log("REQ:", json);
-
     const api = await fetch(
       API_URL,
       {
         method: "POST",
         headers: HEADERS,
-        body: json,
+        body: req.body,
       }
     );
-
-    json = await api.text();
-    console.log("RES:", json); 
 
     // api.headers.set("Access-Control-Allow-Origin", "https://whois.repl.co");
     // api.headers.set("Vary", "Origin");
     // api.headers.set("Access-Control-Allow-Origin", "*");
 
     return new Response(
-      json,
+      api.body,
       {
         headers: {
           "Access-Control-Allow-Origin": "*",

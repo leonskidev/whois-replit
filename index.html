@@ -74,12 +74,14 @@
           {
             method: "POST",
             headers: { "Origin": "https://whois.repl.co" },
-            body: `query {
-              userByUsername(username: "${username}") {
-                id username firstName lastName bio isVerified url isLoggedIn
-                timeCreated image
-              }
-            }` // roles {} subscription {} languages {}
+            body: JSON.stringify({
+              query: `query {
+                userByUsername(username: "${username}") {
+                  id username firstName lastName bio isVerified url isLoggedIn
+                  timeCreated image
+                }
+              }`, // roles {} subscription {} languages {}
+            })
           }
         );
 

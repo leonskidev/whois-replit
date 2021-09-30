@@ -4,6 +4,7 @@
 
 import { serve } from "https://deno.land/x/sift@0.3.5/mod.ts";
 
+const API_URL = "https://replit.com/graphql";
 const HEADERS = new Headers({
   "Content-Type": "application/json",
   "Accept": "application/json",
@@ -13,10 +14,14 @@ const HEADERS = new Headers({
   "Origin": "https://replit.com/",
 });
 
-const API_URL = "https://replit.com/graphql";
+const ORIGIN = "https://whois.repl.co";
 
 serve({
   "/": async (req) => {
+    if(req.url.toLowerCase() !== ORIGIN) {
+      return new Response(null, { status: 401 });
+    }
+
     const api = await fetch(
       API_URL,
       {
@@ -27,6 +32,7 @@ serve({
     );
 
     // api.headers.set("Access-Control-Allow-Origin", "https://whois.repl.co");
+    // api.headers.set("Vary", "Origin");
     api.headers.set("Access-Control-Allow-Origin", "*");
 
     return api;

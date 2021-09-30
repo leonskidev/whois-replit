@@ -73,10 +73,10 @@
        */
       const find = async (username) => {
         return await fetch(
-          API_URL,
+          "https://whois-replit.deno.dev",
           {
             method: "POST",
-            headers: HEADERS,
+            headers: { "Origin": "https://whois.repl.co" },
             body: `query {
               userByUsername(username: "${username}") {
                 id username

@@ -19,9 +19,9 @@ const ORIGIN = "https://whois.repl.co";
 
 serve({
   "/": async (req) => {
-    // if(req.url.toLowerCase() !== ORIGIN) {
-    //   return new Response(null, { status: 401 });
-    // }
+    if(req.url.toLowerCase() !== ORIGIN) {
+      return new Response(null, { status: 401 });
+    }
 
     const api = await fetch(
       API_URL,
@@ -32,17 +32,13 @@ serve({
       }
     );
 
-    // api.headers.set("Access-Control-Allow-Origin", "https://whois.repl.co");
-    // api.headers.set("Vary", "Origin");
-    // api.headers.set("Access-Control-Allow-Origin", "*");
-
     return new Response(
       api.body,
       {
         headers: {
-          "Access-Control-Allow-Origin": "*",
-          // "Access-Control-Allow-Origin": "https://whois.repl.co",
-          // "Vary": "Origin",
+          // "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Origin": "https://whois.repl.co",
+          "Vary": "Origin",
         },
       }
     );

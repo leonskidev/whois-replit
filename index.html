@@ -31,7 +31,7 @@
       <h1>Replit User Whois</h1>
 
       <p>
-        A quick and <b><a href="https://replit.com/talk/share/Presenting-Replit-User-Search-v3/145961" target="blank">painless</a></b>
+        A quick and <b><a href="https://replit.com/talk/share/ch1ck3n-thanks-Also-if-you-want-an-ex/145961/561459" target="blank">painless</a></b>
         way to find out information about a <b><a href="https://replit.com" target="blank">Replit</a></b> user.
       </p>
     </header>
@@ -60,16 +60,49 @@
     </footer>
 
     <script>
+      // source: https://github.com/adrian154/gen-html/blob/main/index.js
+      const voidElements = [
+        "area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"
+      ];
+
+      const escapeHTML = text => text.replace(/>/g, "&gt;").replace(/</g, "&lt;");
+      const escapeAttribute = text => escapeHTML(text).replace(/"/g, "&quot;").replace(/\\/g, "&bsol;");
+      const createDocument = document => "<!DOCTYPE html>" + convertTag(document);
+
+      // Convert single element
+      const convertTag = (object, allowLiteralHTML) => {
+        if(typeof object === "string") {
+          return allowLiteralHTML ? object : escapeHTML(object);
+        }
+        
+        if(Array.isArray(object)) {
+          return object.map(elem => convertTag(elem, allowLiteralHTML)).join("");
+        }
+
+        if(typeof object !== "object" || object == null) {
+          return "";
+        }
+
+        if(!object.tag) throw new Error("Object has no tag");
+        const openTag = `<${[object.tag, ...Object.keys(object).filter(attr => !["tag", "child", "allowLiteralHTML"].includes(attr)).map(attr => object[attr] ? `${attr}="${escapeAttribute(String(object[attr]))}"` : attr)].join(" ")}>`;
+
+        if(voidElements.includes(object.tag)) {
+          return openTag; 
+        }
+
+        return openTag + (object.child ? convertTag(object.child, object.allowLiteralHTML ?? allowLiteralHTML) : "") + `</${object.tag}>`;
+      };
+    </script>
+
+    <script>
       /** @returns {HTMLInputElement} */
       const search = () => document.getElementById("search");
       /** @returns {HTMLDivElement} */
       const user = () => document.getElementById("user");
 
-      // const CHECK_MARK = "✔"; // &check;
-
       /** @param {string} username */
       const find = async (username) => {
-        let info = await fetch(
+        const info = await fetch(
           "https://whois-replit.deno.dev",
           {
             method: "POST",
@@ -77,8 +110,8 @@
             body: JSON.stringify({
               query: `query {
                 userByUsername(username: "${username}") {
-                  id username firstName lastName bio isVerified url isLoggedIn
-                  timeCreated image
+                  id username firstName lastName bio isVerified url timeCreated
+                  image
                 }
               }`, // roles {} subscription {} languages {}
             })
@@ -87,20 +120,125 @@
 
         if(!info.ok) {
           const err = document.createElement("p");
+          err.id = "user";
           err.textContent = "Looks like there was a problem with the API.";
           user().firstChild.replaceWith(err);
           return;
         }
 
-        info = await info.json();
-        console.log(info);
+        /** @type {User} */
+        const data = (await info.json()).data.userByUsername;
 
-        // if(info.name && info.name === "Error") {
-        //   const err = document.createElement("p");
-        //   err.textContent = "That user doesn't exist.";
-        //   user().firstChild.replaceWith(err);
-        //   return;
-        // }
+        if(!data) {
+          const err = document.createElement("p");
+          err.id = "user";
+          err.textContent = "That user doesn't exist.";
+          user().replaceWith(err);
+          return;
+        }
+
+        /**
+         * @typedef {Object} UserData
+         * @property {number} id used
+         * @property {string} username used
+         * @property {string | null} firstName used
+         * @property {string | null} lastName used
+         * @property {string} bio used
+         * @property {boolean | null} isVerified
+         * @property {string} url used
+         * @property {string} timeCreated used
+         * @property {string} image used
+         */
+
+        user().outerHTML = convertTag({
+          // user div
+          tag: "div",
+          id: "user",
+          child: [
+            // user top div
+            {
+              tag: "div",
+              style: "display: flex; flex: row nowrap; align-items: center;",
+              child: [
+                // data.image
+                {
+                  tag: "img",
+                  style: "width: 2.5rem; height: 2.5rem; border-radius: 50%;",
+                  src: data.image,
+                },
+                // data.username, data.id, data.url
+                {
+                  tag: "a",
+                  style: "margin: 0 0 0 1rem; color: inherit;",
+                  href: `https://replit.com${data.url}`,
+                  target: "blank",
+                  child: [
+                    `@${data.username}`,
+                    {
+                      tag: "small",
+                      style: "color: #888888;",
+                      child: `#${data.id}`,
+                    },
+                  ],
+                },
+                // data.isVerified
+                {
+                  tag: "p",
+                  style: "margin: 0 0 0 0.5rem;",
+                  title: "Verified email on https://replit.com",
+                  child: [
+                    {
+                      tag: "small",
+                      child: "✔",
+                    }
+                  ],
+                },
+                // data.fistName, data.lastName
+                data.firstName ? {
+                  tag: "p",
+                  style: "margin: 0 0 0 0.5rem;",
+                  child: [
+                    {
+                      tag: "small",
+                      child: "a.k.a. ",
+                    },
+                    {
+                      tag: "small",
+                      style: "color: #888888;",
+                      child: `${data.firstName}${data.lastName ? ` ${data.lastName}` : ""}`,
+                    },
+                  ],
+                } : undefined,
+              ],
+            },
+            // data.timeCreated
+            {
+              tag: "p",
+              style: "margin: 0 0 0 3.5rem;",
+              child: [
+                {
+                  tag: "small",
+                  child: "Created on: ",
+                },
+                {
+                  tag: "small",
+                  child: `${(new Date(data.timeCreated)).toLocaleString()}`,
+                },
+              ],
+            },
+            // data.bio
+            data.bio ? {
+              tag: "p",
+              style: "margin: 0 0 0 3.5rem;",
+              child: [
+                {
+                  tag: "small",
+                  child: `Bio: ${data.bio}`,
+                },
+              ],
+            } : undefined,
+          ],
+        });
       };
 
       search().addEventListener("keyup", async (ev) => {

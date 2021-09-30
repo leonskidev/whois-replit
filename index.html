@@ -246,6 +246,17 @@
           await find(ev.currentTarget.value);
         }
       });
+
+      (() => {
+        const username = (new URLSearchParams(location.search)).get("username");
+
+        if(username) {
+          search().value = username;
+          search().dispatchEvent(new KeyboardEvent("keyup", {
+            key: "Enter",
+          }))
+        }
+      })();
     </script>
   </body>
 </html>
